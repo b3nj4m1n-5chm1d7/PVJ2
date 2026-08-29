@@ -9,15 +9,14 @@ centrospriteX = 0
 centrospriteY = 0
 
 musica = nil
-volMus = 0.4
 
 sfx = nil
 mejora = nil
 
 clic = 0
 
-escala = 0.3
-escalamaxima = 0.3
+escala = 0.15
+escalamaxima = 0.15
 
 fondo = nil
 
@@ -35,7 +34,7 @@ function love.load()
 
     musica = love.audio.newSource("musica.mp3", "stream")
     musica:setLooping(true)
-    musica:setVolume(volMus)
+    musica:setVolume(0.4)
     love.audio.play(musica)
 
     sfx = love.audio.newSource("click.mp3", "static")
@@ -45,10 +44,13 @@ function love.load()
 end
 
 function love.update(dt)
-    escala = escala + (0.2 * dt)
+    
+    escala = escala + (0.1 * dt)
 
     if escala > escalamaxima then
+
         escala = escalamaxima
+
     end
 end
 
@@ -59,18 +61,22 @@ function love.mousepressed(x,y,boton)
         distancia = math.sqrt((x - centroX)^2 + (y - centroY)^2)
 
         if distancia < 190 then
+
             puntaje = puntaje + 1
+
             local nuevosonido = sfx:clone()
+
             clic = clic + 1
 
             love.audio.play(nuevosonido)
 
-            escala = 0.2
+            escala = 0.12
         end
     end
 end
 
 function love.draw()
+
     love.graphics.draw(fondo,0,0,0,0.63,0.9,0,0)
 
     love.graphics.print(textPuntaje..puntaje, (centroX - 30),50)
