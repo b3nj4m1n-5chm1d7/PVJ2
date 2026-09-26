@@ -1,8 +1,5 @@
 --Se llama a las clases
-require("jugador")
-require("enemigo")
-require("animacionAtaque")
-require("animaciones")
+require("dependencias")
 
 --Tabla de la ventana
 ventana = {
@@ -26,6 +23,8 @@ vidas = 5
 --variables de victoria y derrota
 Ganar = false
 Perder = false
+
+estado = nil
 
 --====================Establece el calculo para impactos==========================
 function comprobarColison(x1, y1, ancho1, alto1, x2, y2, ancho2, alto2)
@@ -57,130 +56,29 @@ function love.load()
     --Establece un filtro para los sprites, especialmente pixelarts
     love.graphics.setDefaultFilter("nearest","nearest")
 
-    --=================Definicion de variables para canciones/sonidos=============
-    musica = love.audio.newSource("sound/musica.mp3", "stream")
-    musica:setLooping(true)
-    musica:setVolume(0.3)
-    love.audio.play(musica)
-
-    sfx = love.audio.newSource("sound/daño.wav", "static")
-
-    derrota= love.audio.newSource("sound/derrota.mp3", "stream")
-    derrota:setLooping(false)
-
-    victoria = love.audio.newSource("sound/victoria.mp3", "stream")
-    victoria:setLooping(true)
-    victoria:setVolume(0.5)
-    --===========================================================================
-
-    --Crea un canvas donde dibujar los elementos
-    lienzo = love.graphics.newCanvas(ventana.ancho, ventana.alto)
-
-    --Carga de animaciones
-    animaciones.Load()
-
-    --Carga de elementos del jugador
-    jugador.Crear()
-
-    math.randomseed(os.time())
-
-    --Creacion de enemigo
-    enemigo.Crear(enemigo, 100, 100, "img/orco.png")
+    estado = EstadoJugar()
 
 end
 
---===============Deteccion del espacio===============
+--===============Deteccion del Teclas===============
 function love.keypressed(key)
+
     if key == "space" and not ataque then
         ataque = true
     end
+
 end
 
 --=================Actualizacion de los elementos en pantalla================
 function love.update(dt)
 
-    if Ganar or Perder then
-        return
-    end
+    estado:actualizar(dt)
 
-    --Movimientos
-    jugador.Mover(dt)
-
-    enemigo.Mover(enemigo,jugador.x,jugador.y,15,dt)
-
-    animaciones.Update(dt)
-
-    --Hitboxes
-    jugador.HitBox()
-
-    enemigo.HitBox(enemigo)
-
-    --Verificacion Coliciones
-    atrapado = comprobarColison(jugador.hitbox_x,jugador.hitbox_y,jugador.ancho / 4,jugador.altura / 4,enemigo.hitbox_x,enemigo.hitbox_y,(enemigo.ancho)/30,(enemigo.altura)/18)
-
-    if atrapado then
-        enemigo.reinicio(enemigo,100,150)
-        
-        if ataque then
-            love.audio.stop(sfx)
-            enemigo.reinicio(enemigo,100,150)
-
-            jugador.derrotados = jugador.derrotados + 1
-
-            --Verifica la victoria
-            if jugador.derrotados == jugador.objetivo then
-                Ganar = true
-
-                love.audio.stop(musica)
-                
-                love.audio.play(victoria)
-            end
-
-        else
-
-            vidas = vidas - 1
-            love.audio.play(sfx)
-
-            --Verifica la derrota
-            if vidas <= 0 then
-
-                Perder = true
-
-                love.audio.stop(musica)
-
-                love.audio.play(derrota)
-            end
-        end
-    end
 end
 
 --===================Etapa de Dibujo============================
 function love.draw()
 
-    love.graphics.setCanvas(lienzo)
+    estado:draw()
 
-    --Se limpia el fondo, para no dejar imagen residual
-    love.graphics.clear()
-
-    --Dibujo de los distintos elementos
-    jugador.Draw()
-
-    enemigo.Draw(enemigo)
-
-    animaciones.Draw()
-    
-    debugHitboxes()
-
-    love.graphics.setCanvas()
-
-    love.graphics.draw(lienzo,0,0,0,ventana.escala,ventana.escala)
-
-    --Interfaz/informacion en pantalla
-    if not Perder then
-        love.graphics.print("Vidas "..vidas,10,10)
-    end
-
-    if not Ganar then
-        love.graphics.print("Objetivo "..jugador.derrotados.. "/".. jugador.objetivo,700,10)
-    end
 end
