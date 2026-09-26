@@ -11,7 +11,7 @@ function EstadoJugar:init()
     sfx = love.audio.newSource("sound/daño.wav", "static")
 
     derrota= love.audio.newSource("sound/derrota.mp3", "stream")
-    derrota:setLooping(false)
+    derrota:setLooping(true)
 
     victoria = love.audio.newSource("sound/victoria.mp3", "stream")
     victoria:setLooping(true)
@@ -37,6 +37,7 @@ end
 function EstadoJugar:draw()
     
     love.graphics.setCanvas(lienzo)
+    love.graphics.setFont(fuente3)
 
     --Se limpia el fondo, para no dejar imagen residual
     love.graphics.clear()
@@ -61,13 +62,19 @@ function EstadoJugar:draw()
     end
 
     if not Ganar then
-        love.graphics.print("Objetivo "..jugador.derrotados.. "/".. jugador.objetivo,700,10)
+        love.graphics.print("Objetivo "..jugador.derrotados.. "/".. jugador.objetivo,550,10)
+        love.graphics.print("Atacar = Espacio",10,680)
+    end
+
+    if self.Ganar then
+        love.graphics.printf("VICTORIA",0,250,ventana.ancho * ventana.escala, 'center')
+        love.graphics.printf("Iniciar nueamente = Esc",0, 550,ventana.ancho * ventana.escala, 'center')
     end
 end
 
 function EstadoJugar:actualizar(dt)
 
-    if Ganar or Perder then
+    if self.Ganar or self.Perder then
         return
     end
 
@@ -84,9 +91,9 @@ function EstadoJugar:actualizar(dt)
     enemigo.HitBox(enemigo)
 
     --Verificacion Coliciones
-    atrapado = comprobarColison(jugador.hitbox_x,jugador.hitbox_y,jugador.ancho / 4,jugador.altura / 4,enemigo.hitbox_x,enemigo.hitbox_y,(enemigo.ancho)/30,(enemigo.altura)/18)
+    self.atrapado = comprobarColison(jugador.hitbox_x,jugador.hitbox_y,jugador.ancho / 4,jugador.altura / 4,enemigo.hitbox_x,enemigo.hitbox_y,(enemigo.ancho)/30,(enemigo.altura)/18)
 
-    if atrapado then
+    if self.atrapado then
         enemigo.reinicio(enemigo,100,150)
         
         if ataque then
@@ -97,7 +104,7 @@ function EstadoJugar:actualizar(dt)
 
             --Verifica la victoria
             if jugador.derrotados == jugador.objetivo then
-                Ganar = true
+                self.Ganar = true
 
                 love.audio.stop(musica)
                 
@@ -112,11 +119,14 @@ function EstadoJugar:actualizar(dt)
             --Verifica la derrota
             if vidas <= 0 then
 
-                Perder = true
+                self.Perder = true
 
                 love.audio.stop(musica)
 
                 love.audio.play(derrota)
+
+                MaquinaEstadoGlobal:cambiar('derrota')
+
             end
         end
     end

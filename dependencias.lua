@@ -10,3 +10,6 @@ require "animaciones"
 --Estados
 require "estado"
 require "estadoJugar"
+require "estadoTitulo"
+require "maquinaEstado"
+require "estadoDerrota"

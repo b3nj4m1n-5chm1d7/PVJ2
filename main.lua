@@ -1,4 +1,4 @@
---Se llama a las clases
+--Se llama a las dependencias
 require("dependencias")
 
 --Tabla de la ventana
@@ -25,6 +25,12 @@ Ganar = false
 Perder = false
 
 estado = nil
+
+--Fuentes
+fuente1 = nil
+fuente2 = nil
+fuente3 = nil
+fuente4 = nil
 
 --====================Establece el calculo para impactos==========================
 function comprobarColison(x1, y1, ancho1, alto1, x2, y2, ancho2, alto2)
@@ -56,8 +62,19 @@ function love.load()
     --Establece un filtro para los sprites, especialmente pixelarts
     love.graphics.setDefaultFilter("nearest","nearest")
 
-    estado = EstadoJugar()
+    --Se Establecen las fuentes
+    fuente1 = love.graphics.newFont('fuente/Vengeance at Sea.otf', 110)
+    fuente2 = love.graphics.newFont('fuente/Bring Me A Helicopter!.otf', 120)
+    fuente3 = love.graphics.newFont('fuente/Klaxon-Smooth.otf', 30)
+    fuente4 = love.graphics.newFont('fuente/Vengeance at Sea.otf', 40)
 
+    MaquinaEstadoGlobal = MaquinaEstado {
+        ['jugar'] = function () return EstadoJugar() end,
+        ['titulo'] = function ()return EstadoTitulo() end,
+        ['derrota'] = function () return EstadoDerrota() end
+    }
+
+    MaquinaEstadoGlobal:cambiar('titulo')
 end
 
 --===============Deteccion del Teclas===============
@@ -67,18 +84,32 @@ function love.keypressed(key)
         ataque = true
     end
 
+    if key == "return" then
+        MaquinaEstadoGlobal:cambiar('jugar')
+        love.audio.stop(derrota)
+        vidas = 5
+        jugador.derrotados = 0
+    end
+
+    if key == "escape" then
+        MaquinaEstadoGlobal:cambiar('titulo')
+        love.audio.stop(musica)
+        love.audio.stop(victoria)
+        love.audio.stop(derrota)
+    end
+
 end
 
 --=================Actualizacion de los elementos en pantalla================
 function love.update(dt)
 
-    estado:actualizar(dt)
+    MaquinaEstadoGlobal:actualizar(dt)
 
 end
 
 --===================Etapa de Dibujo============================
 function love.draw()
 
-    estado:draw()
+    MaquinaEstadoGlobal:dibujar()
 
 end
