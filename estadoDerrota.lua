@@ -1,6 +1,10 @@
 EstadoDerrota = Class{_includes = Estado}
 
+fondo2 = nil
+
 function EstadoDerrota:draw()
+
+    love.graphics.draw(fondo2,0,0,0,2,1.5)
 
     love.graphics.setFont(fuente2)
     love.graphics.setColor(1,0,0)
@@ -12,6 +16,8 @@ function EstadoDerrota:draw()
 end
 
 function EstadoDerrota:init()
+
+    fondo2 = love.graphics.newImage("img/Blackhole.png")
     
 end
 

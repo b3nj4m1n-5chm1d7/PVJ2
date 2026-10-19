@@ -20,7 +20,7 @@ jugador = {
     correr = nil,
 
     derrotados = 0,
-    objetivo = 10
+    objetivo = 20
 }
 
 --========================Definicion de elementos del jugador========================

@@ -21,7 +21,7 @@ function animaciones.Load()
     golpear = love.audio.newSource("sound/ataque.ogg", "static")
     golpear:setVolume(1)
 
-    spritesheet = love.graphics.newImage("img/ataque.png")
+    spritesheet = love.graphics.newImage("img/Anteriores/ataque.png")
     
     --Separacion por secciones para spritesheets simples
     for i = 0, 7 do
@@ -54,7 +54,7 @@ function animaciones.Draw()
 
     if ataque then
 
-        love.graphics.draw(spritesheet,quad[i], jugador.hitbox_x - 25, jugador.hitbox_y - 25 , 0, 0.5,0.4,quad[i].origenx,quad[i].origeny)
+        love.graphics.draw(spritesheet,quad[i], nave.hitbox_x - 25, nave.hitbox_y - 25 , 0, 0.5,0.4,quad[i].origenx,quad[i].origeny)
     
     end
 

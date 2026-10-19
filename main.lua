@@ -3,10 +3,13 @@ require("dependencias")
 
 --Tabla de la ventana
 ventana = {
-    ancho = 160,
+    ancho = 250,
     alto = 144,
     escala = 5
 }
+
+Debug = false
+pausa = false
 
 --==================Se cargan variables para Canciones=================
 musica = nil
@@ -16,6 +19,8 @@ sfx = nil
 derrota = nil
 
 victoria = nil
+
+preludio = nil
 --======================================================
 
 vidas = 5
@@ -42,14 +47,13 @@ end
 
 --Dibujo de las hitboxes
 function debugHitboxes()
-    
-    if love.keyboard.isDown("h") then
 
-        --Hitboxes y centros visibles
-        jugador.Debug()
-        enemigo.Debug(enemigo)
+    --Hitboxes y centros visibles
+    nave.Debug()
+    asteroide.Debug()
+    Disparo.Debug()
 
-    end
+    love.graphics.setColor(1,1,1)
     
 end
 
@@ -63,39 +67,77 @@ function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
 
     --Se Establecen las fuentes
-    fuente1 = love.graphics.newFont('fuente/Vengeance at Sea.otf', 110)
+    fuente1 = love.graphics.newFont('fuente/KZ_SCRATCHER.TTF', 150)
     fuente2 = love.graphics.newFont('fuente/Bring Me A Helicopter!.otf', 120)
-    fuente3 = love.graphics.newFont('fuente/Klaxon-Smooth.otf', 30)
-    fuente4 = love.graphics.newFont('fuente/Vengeance at Sea.otf', 40)
+    fuente3 = love.graphics.newFont('fuente/PixelO10Bott-Regular.ttf', 30)
+    fuente4 = love.graphics.newFont('fuente/Espía Húngaro.otf', 40)
 
     MaquinaEstadoGlobal = MaquinaEstado {
         ['jugar'] = function () return EstadoJugar() end,
         ['titulo'] = function ()return EstadoTitulo() end,
-        ['derrota'] = function () return EstadoDerrota() end
+        ['derrota'] = function () return EstadoDerrota() end,
+        ['controles'] = function () return EstadoControls() end,
+        ['victoria'] = function () return EstadoVictoria() end
     }
 
     MaquinaEstadoGlobal:cambiar('titulo')
+
 end
 
 --===============Deteccion del Teclas===============
 function love.keypressed(key)
 
-    if key == "space" and not ataque then
-        ataque = true
+    if key == "1" then
+        
+        Debug = not Debug
+        
+    end
+
+    if key == "space" and not Disparo.activo then
+
+        Eventos.emitir("reinicio")
+
+        Disparo.activo = true
+        love.audio.play(Disparo.laser)
+        
     end
 
     if key == "return" then
-        MaquinaEstadoGlobal:cambiar('jugar')
-        love.audio.stop(derrota)
-        vidas = 5
-        jugador.derrotados = 0
+        MaquinaEstadoGlobal:cambiar('controles')
     end
 
     if key == "escape" then
+
+        love.audio.stop()
         MaquinaEstadoGlobal:cambiar('titulo')
-        love.audio.stop(musica)
-        love.audio.stop(victoria)
-        love.audio.stop(derrota)
+
+    end
+
+    if key == "p" then
+
+        Eventos.emitir("DetenerAsteroide")
+        Eventos.emitir("DetenerNave")
+        pausa = true
+
+    end
+
+    if key == "a" then
+        
+        Eventos.emitir("ActivarAsteroide")
+        Eventos.emitir("ActivarNave")
+        pausa = false
+
+    end
+
+    if key == "o" or key == "0" then
+        
+        love.audio.stop()
+        MaquinaEstadoGlobal:cambiar('jugar')
+        asteroide.activo = true
+        nave.activo = true
+        vidas = 5
+        jugador.derrotados = 0
+
     end
 
 end
