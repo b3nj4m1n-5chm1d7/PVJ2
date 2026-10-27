@@ -4,7 +4,7 @@ background = nil
 
 function EstadoTitulo:init()
 
-    self.titulo = "Prototipo N 3"
+    self.titulo = "Prototipo N 4"
     self.subtitulo = "Benjamin Schmidt"
 
     background = love.graphics.newImage("img/Nebulosa.jpeg")

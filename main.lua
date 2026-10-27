@@ -93,11 +93,12 @@ function love.keypressed(key)
         
     end
 
-    if key == "space" and not Disparo.activo then
+    if key == "space" and Disparo and not Disparo.activo then
 
         Eventos.emitir("reinicio")
 
         Disparo.activo = true
+        love.audio.stop(Disparo.laser)
         love.audio.play(Disparo.laser)
         
     end

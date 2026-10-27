@@ -39,12 +39,30 @@ function EstadoJugar:init()
 
     Eventos.on("colision", function()
         --Colision con la nave
-        self.atrapado = comprobarColison(nave.hitbox_x, nave.hitbox_y, 55, 25, asteroide.hitbox_x, asteroide.hitbox_y, 25, 20)
+        self.atrapado = false
+        self.coli = nil
+
+        for i, a in ipairs(asteroide.lista) do
+            if comprobarColison(nave.hitbox_x, nave.hitbox_y, 55, 25, a.hitbox_x, a.hitbox_y, 25, 20) then
+                self.atrapado = true
+                self.coli = a
+                break
+            end
+        end
     end)
 
     Eventos.on("destruir", function()
         --Colicion con el disparo
-        self.alcanzado = comprobarColison(Disparo.hitbox_x, Disparo.hitbox_y, Disparo.ancho * Disparo.escala, Disparo.alto * Disparo.escala, asteroide.hitbox_x, asteroide.hitbox_y, asteroide.ancho * asteroide.escala, asteroide.alto * asteroide.escala) 
+        self.alcanzado = false
+        self.impacta = nil
+        
+        for i, a in ipairs(asteroide.lista) do
+            if comprobarColison(Disparo.hitbox_x, Disparo.hitbox_y, Disparo.ancho * Disparo.escala, Disparo.alto * Disparo.escala, a.hitbox_x, a.hitbox_y, a.ancho * a.escala, a.alto * a.escala) then
+                self.alcanzado = true
+                self.impacta = a
+                break
+            end
+        end
     end)
 end
 
@@ -118,6 +136,7 @@ function EstadoJugar:actualizar(dt)
 
     asteroide.Mover(dt)
 
+    asteroide.ActualizarRutina(dt)
 
     --Hitboxes
     nave.HitBox()
@@ -125,13 +144,27 @@ function EstadoJugar:actualizar(dt)
     Disparo.HitBox()
 
     --Verificacion Coliciones
-    Eventos.emitir("colision")
-    Eventos.emitir("destruir")
+    Eventos.emitir("colision", self.coli)
+    Eventos.emitir("destruir", self.impacta)
 
     if self.atrapado then
 
         Eventos.emitir("perdervidas", vidas)
+        love.audio.stop(sfx)
         love.audio.play(sfx)
+
+        local a = self.coli
+
+        if a then
+
+            a.x = 300
+            a.y = math.random(10,130)
+            a.velocidad = math.random(50,300)
+
+        end
+
+        self.atrapado = false
+        self.coli = nil
 
         --Verifica la derrota
         if vidas <= 0 then
@@ -145,8 +178,6 @@ function EstadoJugar:actualizar(dt)
             MaquinaEstadoGlobal:cambiar('derrota')
 
          end
-
-         Eventos.emitir("asteroideDestruido")
 
     end
 
@@ -171,7 +202,7 @@ function EstadoJugar:actualizar(dt)
 
             end
 
-            Eventos.emitir("asteroideDestruido")
+            Eventos.emitir("asteroideDestruido", self.impacta)
 
         end
     end

@@ -23,6 +23,9 @@ nave = {
 
 }
 
+Eventos.on("DetenerNave",function() nave.Detener() end)
+Eventos.on("ActivarNave",function () nave.Continuar() end)
+
 function nave.Crear()
 
     nave.sprite = love.graphics.newImage("img/Nave.png")
@@ -35,9 +38,6 @@ function nave.Crear()
 
     nave.origenx = nave.ancho
     nave.origeny = nave.alto
-
-    Eventos.on("DetenerNave",function() nave.Detener() end)
-    Eventos.on("ActivarNave",function () nave.Continuar() end)
 
 end
 

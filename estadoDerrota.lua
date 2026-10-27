@@ -12,6 +12,7 @@ function EstadoDerrota:draw()
     love.graphics.setColor(0,0,1)
     love.graphics.printf("reiniciar", 0,260,ventana.ancho * ventana.escala, 'center')
     love.graphics.setColor(1,1,1)
+    love.graphics.printf("presione Esc", 0, 480, ventana.ancho * ventana.escala, 'center')
 
 end
 
